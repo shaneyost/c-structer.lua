@@ -21,34 +21,42 @@ typedef union
     return cdef
 end
 
-local function create_binary(self, filename)
-    local file = assert(io.open(filename, "wb"))
+local function _create_table_file(self)
+    local file = assert(io.open(self.tbin, "wb"))
     file:write(ffi.string(self.raw, self:size()))
     file:close()
 end
 
-local function peek(self, col, fmt)
-    col = col or 8
-    fmt = fmt or "%02X"
+local function _create_hash(self)
+    local cmd = string.format('%s "%s"', self.algo, self.tbin)
+    local handle = assert(io.popen(cmd), "Error: failed open process")
+    local output = handle:read("*a") or ""
+    local ok, _, ecode = handle:close()
+    assert(ok, string.format("Error: command failed (%d)", ecode or -1))
+    local hash = output:match("^(%x+)")
+    assert(hash, "Error: failed to extract hash from:\n" .. output)
+    return hash
+end
+
+local function _peek(self)
     local out = {}
     for i = 0, self:size() - 1 do
-        out[#out + 1] = string.format(fmt, self.raw[i])
-        out[#out + 1] = ((i + 1) % col == 0) and "\n" or " "
+        out[#out + 1] = string.format(self.fout.fmt, self.raw[i])
+        out[#out + 1] = ((i + 1) % self.fout.col == 0) and "\n" or " "
     end
     return table.concat(out)
 end
 
-local function create_hashfile(self, filename)
-    utl._compute_hash_table("shasum -a 256", filename)
-end
-
 local _metatable = {
     __index = {
-        create_binary = create_binary,
-        create_hashfile = create_hashfile,
-        size = function(self) return ffi.sizeof(self) end,
+        tbin  = "table.bin",
+        algo  = "shasum -a 256",
+        fout  = {fmt="%02X", col=8},
+        table = _create_table_file,
+        hash  = _create_hash,
+        size  = function(self) return ffi.sizeof(self) end,
     },
-    __tostring = peek,
+    __tostring = _peek,
 }
 
 function CStructer.create_struct(struct_data)

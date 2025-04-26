@@ -1,57 +1,6 @@
 local CStructer = {}
 local ffi = require("ffi")
 
-function CStructer._compute_hash_table(hash_cmd, filename)
-    assert(type(hash_cmd) == "string", "Error: bad type for hash_cmd")
-    assert(type(filename) == "string", "Error: bad type for filename")
-
-    local full_cmd = string.format('%s "%s" 2>/dev/null', hash_cmd, filename)
-
-    local handle = io.popen(full_cmd, "r")
-    if not handle then
-        return nil, "Error: failed to open process"
-    end
-
-    local output = handle:read("*a") or ""
-    local ok, _, exit_code = handle:close()
-
-    if not ok then
-        return nil, string.format("Error: command failed to run (%d)", exit_code or -1)
-    end
-
-    local digest = output:match("^(%x+)")
-    if not digest then
-        return nil, "Error: failed to extract digest from output:\n" .. output
-    end
-
-    return digest, nil
-end
-
-function CStructer._compute_hash_table(hash_cmd, filename)
-    assert(type(hash_cmd) == "string", "Error: bad type for hash_cmd")
-    assert(type(filename) == "string", "Error: bad type for filename")
-
-    local full_cmd = string.format('%s "%s"', hash_cmd, filename)
-    local handle = io.popen(full_cmd)
-    if not handle then
-        return nil, "Error: failed to open process"
-    end
-
-    local output = handle:read("*a")
-    local ok = handle:close()
-
-    if not ok then
-        return nil, "Error: command failed to run: " .. full_cmd
-    end
-
-    local digest = output:match("^(%x+)")
-    if not digest then
-        return nil, "Error: failed to extract digest from output:\n" .. output
-    end
-
-    return digest, nil
-end
-
 function CStructer._extract_validate_struct_type(struct_data)
     assert(type(struct_data) == "table", "Error: bad type for struct_data")
     local struct_type = struct_data[1].sdef
