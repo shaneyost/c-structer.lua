@@ -10,21 +10,18 @@ flowchart TD
   RUNTIME[RUNTIME]
   OUTPUTS[OUTPUTS]
 
-  CFG[Model C struct as Lua table:\ntype=float, name=float_v, init=3.14\n...\ntype=int8_t, name=int8_v, init=-42]
-  CODE[Require structer module\nCreate struct + constructor\nAssign/init values\nCall :table() method]
+  CFG[Define struct:\n- float_v = 3.14\n- int8_v = -42]
+  CODE[Use structer module:\n- create_struct\n- initialize values\n- call table method]
 
   BIN1[TABLE1.BIN]
   BIN2[TABLE2.BIN]
   BIN3[TABLE3.BIN\nHex: D6 C3 F5 48 40]
-  SHA[crcs.txt (SHA256)\n445e.. table1.bin\n2342.. table2.bin\nc34c.. table3.bin]
+  SHA[crcs.txt with SHA256:\n- 445e.. table1.bin\n- 2342.. table2.bin\n- c34c.. table3.bin]
 
-  CONFIG --> CFG
-  CFG --> RUNTIME
-  RUNTIME --> CODE
-  CODE --> OUTPUTS
+  CONFIG --> CFG --> RUNTIME
+  RUNTIME --> CODE --> OUTPUTS
   OUTPUTS --> BIN1
   OUTPUTS --> BIN2
   OUTPUTS --> BIN3
   OUTPUTS --> SHA
-
 ```
