@@ -5,5 +5,5 @@ runtime around your configs to modify and generate tables for C app/lib
 initialization.
 
 <p align="center">
-  <img src=".media/output.gif" alt="">
+  <img src=".media/output.gif" width="800"/>
 </p>
