@@ -1,6 +1,6 @@
 #!/usr/bin/env luajit
 
-local tbl = require("c-structer.structer")
+local tbl = require("cstructer.structer")
 local cfg = require("example_config")
 
 local Constructor, vals = tbl.create_struct(cfg)

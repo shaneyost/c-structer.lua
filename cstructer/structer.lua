@@ -1,6 +1,6 @@
 local CStructer = {}
 local ffi = require("ffi")
-local utl = require("c-structer.structer_utils")
+local utl = require("cstructer.structer_utils")
 
 local function create_cdef(struct_mems, struct_type, struct_size)
     local cdef = string.format(
